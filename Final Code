@@ -1,1 +1,10 @@
+# Exploratory Data Analytics
+
+# Data Pre-processing
+
+# Market Basket Analysis
+import pandas as pd
+
+df = pd.read_excel("cleaned_dataset_global (1).xlsx")
+df.head()
 
