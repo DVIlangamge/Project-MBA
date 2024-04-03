@@ -1,10 +1,82 @@
-# Exploratory Data Analytics
+### Exploratory Data Analytics
 
-# Data Pre-processing
+### Data Pre-processing
 
-# Market Basket Analysis
+### Market Basket Analysis
 import pandas as pd
 
+# Reading the dataset
 df = pd.read_excel("cleaned_dataset_global (1).xlsx")
 df.head()
+
+# Creating a new column as single_transaction using Customer ID and Order Date
+df["single_transaction"] = df["Customer ID"].astype(str)+'_'+df['Order Date'].astype(str)
+df.head()
+
+# Creating a table with the new column and Sub-Category
+df2 = pd.crosstab(df['single_transaction'],df['Sub-Category'])
+df2
+
+# Encoding data 
+def encode(item_freq):
+    res = 0
+    if item_freq > 0:
+        res = 1
+    return res
+    
+basket_input = df2.applymap(encode)
+
+# Apply apriori algorithm for frequent itemsets
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+
+frequent_itemsets = apriori(basket_input, min_support = 0.001, use_colnames=True)
+
+frequent_itemsets
+
+# Pivot the DataFrame to prepare it for the heatmap
+heatmap_data = frequent_itemsets.pivot(index='support', columns='itemsets', values='support')
+
+# Create the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('support Heatmap of Association Rules')
+plt.xlabel('support')
+plt.ylabel('itemsets')
+plt.show()
+
+# Generate association rules with the measure confidence
+rules1 = association_rules(frequent_itemsets, metric = "confidence", min_threshold=0.01)
+rules1
+
+# Pivot the DataFrame to prepare it for the heatmap
+heatmap_data = rules1.pivot(index='antecedents', columns='consequents', values='confidence')
+
+# Create the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('confidence Heatmap of Association Rules')
+plt.xlabel('Consequents')
+plt.ylabel('Antecedents')
+plt.show()
+
+# Generate association rules with lift measure
+final_rules = association_rules(frequent_itemsets, metric = "lift", min_threshold=1)
+
+final_rules.sort_values(["support", "confidence", "lift"],axis =0, ascending = False)
+
+# Final result vizualization
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Pivot the DataFrame to prepare it for the heatmap
+heatmap_data = final_rules.pivot(index='antecedents', columns='consequents', values='lift')
+
+# Create the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('lift Heatmap of Association Rules')
+plt.xlabel('Consequents')
+plt.ylabel('Antecedents')
+plt.show()
 
