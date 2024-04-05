@@ -1,8 +1,8 @@
-### Exploratory Data Analytics
+### Exploratory Data Analytics - ## Done by Shaini
 
-### Data Pre-processing
+### Data Pre-processing - ## Done by Sihas
 
-### Market Basket Analysis
+### Market Basket Analysis - ##Done by Imal and Dulmi
 import pandas as pd
 
 # Reading the dataset
@@ -65,7 +65,7 @@ final_rules = association_rules(frequent_itemsets, metric = "lift", min_threshol
 
 final_rules.sort_values(["support", "confidence", "lift"],axis =0, ascending = False)
 
-# Final result vizualization
+# Final result vizualization - ## All heatmaps are done by Hewa Prabashini
 import seaborn as sns
 import matplotlib.pyplot as plt
 
