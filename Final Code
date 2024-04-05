@@ -61,16 +61,16 @@ plt.ylabel('Antecedents')
 plt.show()
 
 # Generate association rules with lift measure
-final_rules = association_rules(frequent_itemsets, metric = "lift", min_threshold=1)
+rules2 = association_rules(frequent_itemsets, metric = "lift", min_threshold=1)
 
-final_rules.sort_values(["support", "confidence", "lift"],axis =0, ascending = False)
+rules2.sort_values(["support", "confidence", "lift"],axis =0, ascending = False)
 
 # Final result vizualization - ## All heatmaps are done by Hewa Prabashini
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Pivot the DataFrame to prepare it for the heatmap
-heatmap_data = final_rules.pivot(index='antecedents', columns='consequents', values='lift')
+heatmap_data = rules2.pivot(index='antecedents', columns='consequents', values='lift')
 
 # Create the heatmap
 plt.figure(figsize=(10, 8))
@@ -80,3 +80,6 @@ plt.xlabel('Consequents')
 plt.ylabel('Antecedents')
 plt.show()
 
+#Filtering rules with high Confidence and Lift
+final_rules = final_rules[ (final_rules['lift'] >= 1) & (final_rules['confidence'] >= 0.1) ]
+final_rules
