@@ -2,6 +2,7 @@
 
 ### Data Pre-processing - ## Done by Sihas
 
+
 ### Market Basket Analysis - ##Done by Imal and Dulmi
 import pandas as pd
 
@@ -17,6 +18,81 @@ df.head()
 df2 = pd.crosstab(df['single_transaction'],df['Sub-Category'])
 df2
 
+## TRAINING DATASET
+
+###### MBA using Segments to train the dataset
+## For Consumer Segment
+
+s1 = (df[df["Segment"] == "Consumer"]
+     .groupby(["Order ID", "Sub-Category"])["Quantity"]
+     .sum().unstack().reset_index().fillna(0)
+     .set_index("Order ID"))
+s1
+
+def encode_units(x):
+    if x <=0:
+        return 0
+    if x >=1:
+        return 1
+
+s1_sets = s1.applymap(encode_units)
+
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+
+frequent_itemsets_s1 = apriori(s1_sets, min_support=0.001, use_colnames = True)
+rules_s1 = association_rules(frequent_itemsets_s1, metric = "lift", min_threshold=1)
+rules_s1
+
+#vis1(heatmap)
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+heatmap_data = rules_s1.pivot(index='antecedents', columns='consequents', values='lift')
+plt.figure(figsize=(5, 4))
+sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('lift Heatmap of Association Rules')
+plt.xlabel('Consequents')
+plt.ylabel('Antecedents')
+plt.show()
+
+# vis2(heatmap)
+
+heatmap_data = rules_s2.pivot(index='antecedents', columns='consequents', values='lift')
+plt.figure(figsize=(5, 4))
+sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('lift Heatmap of Association Rules')
+plt.xlabel('Consequents')
+plt.ylabel('Antecedents')
+plt.show()
+
+# vis3(heatmap)
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+heatmap_data = rules_s3.pivot(index='antecedents', columns='consequents', values='lift')
+plt.figure(figsize=(10, 8))
+sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('lift Heatmap of Association Rules')
+plt.xlabel('Consequents')
+plt.ylabel('Antecedents')
+plt.show()
+
+#unique results
+f=rules_s3[(rules_s3["lift"]>=1)&(rules_s3["confidence"]>=0.1)]
+f
+
+# vis4(sscatter)
+plt.figure(figsize=(5, 4))
+plt.scatter(range(len(f)), f['lift'], c=f['lift'], cmap='coolwarm')
+plt.colorbar(label='Lift')
+plt.title('Scatter Plot of Lift Values')
+plt.xlabel('Association Rule Index')
+plt.ylabel('Lift')
+plt.show()
+
+## MBA for whole dataset
+
 # Encoding data 
 def encode(item_freq):
     res = 0
@@ -26,6 +102,8 @@ def encode(item_freq):
     
 basket_input = df2.applymap(encode)
 
+## SUPPORT
+
 # Apply apriori algorithm for frequent itemsets
 from mlxtend.frequent_patterns import apriori
 from mlxtend.frequent_patterns import association_rules
@@ -34,31 +112,13 @@ frequent_itemsets = apriori(basket_input, min_support = 0.001, use_colnames=True
 
 frequent_itemsets
 
-# Pivot the DataFrame to prepare it for the heatmap
-heatmap_data = frequent_itemsets.pivot(index='support', columns='itemsets', values='support')
-
-# Create the heatmap
-plt.figure(figsize=(10, 8))
-sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
-plt.title('support Heatmap of Association Rules')
-plt.xlabel('support')
-plt.ylabel('itemsets')
-plt.show()
+## CONFIDENCE
 
 # Generate association rules with the measure confidence
 rules1 = association_rules(frequent_itemsets, metric = "confidence", min_threshold=0.01)
 rules1
 
-# Pivot the DataFrame to prepare it for the heatmap
-heatmap_data = rules1.pivot(index='antecedents', columns='consequents', values='confidence')
-
-# Create the heatmap
-plt.figure(figsize=(10, 8))
-sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
-plt.title('confidence Heatmap of Association Rules')
-plt.xlabel('Consequents')
-plt.ylabel('Antecedents')
-plt.show()
+## LIFT
 
 # Generate association rules with lift measure
 rules2 = association_rules(frequent_itemsets, metric = "lift", min_threshold=1)
@@ -79,7 +139,3 @@ plt.title('lift Heatmap of Association Rules')
 plt.xlabel('Consequents')
 plt.ylabel('Antecedents')
 plt.show()
-
-#Filtering rules with high Confidence and Lift
-final_rules = final_rules[ (final_rules['lift'] >= 1) & (final_rules['confidence'] >= 0.1) ]
-final_rules
