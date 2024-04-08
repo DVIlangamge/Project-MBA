@@ -1,5 +1,38 @@
 ### Exploratory Data Analytics - ## Done by Shaini
 
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+Global_superstore_data = pd.read_excel("Data science project/Global Superstore Lite.xlsx")
+
+#understanding the data set
+Global_superstore_data.head()
+
+Global_superstore_data.tail()
+
+Global_superstore_data.shape
+
+Global_superstore_data.info
+
+Global_superstore_data.columns
+
+Global_superstore_data.isnull().sum()
+
+Global_superstore_data.describe()
+
+Global_superstore_data.nunique()
+
+# relationship analysis
+corelation = Global_superstore_data.corr()
+sns.heatmap(corelation, xticklabels=corelation.columns, yticklabels=corelation.columns, annot=True)
+
+sns.pairplot(Global_superstore_data)
+
+sns.displot(Global_superstore_data['Quantity'])
+
 ### Data Pre-processing - ## Done by Sihas
 import pandas as pd 
 import numpy as np
@@ -7,15 +40,11 @@ import numpy as np
 df = pd.read_excel('Global Superstore Lite.xlsx')
 print(df.head())
 
-
 print(df.describe())
-
 
 print(df.isnull().sum())
 
-
 df = df.drop('Postal Code', axis=1)
-
 
 print(df.isnull().sum())
 
