@@ -1,7 +1,38 @@
 ### Exploratory Data Analytics - ## Done by Shaini
 
 ### Data Pre-processing - ## Done by Sihas
+import pandas as pd 
+import numpy as np
 
+df = pd.read_excel('Global Superstore Lite.xlsx')
+print(df.head())
+
+
+print(df.describe())
+
+
+print(df.isnull().sum())
+
+
+df = df.drop('Postal Code', axis=1)
+
+
+print(df.isnull().sum())
+
+df = df.drop('Row ID', axis=1)
+columns_info = df.dtypes
+print("Columns and their data types:")
+print(columns_info)
+
+duplicate_rows = df[df.duplicated()]
+print("Duplicate Rows except first occurrence:")
+print(duplicate_rows)
+
+df = df.round(2)
+print(df.head())
+
+df = df.sort_values(by='Order Priority', ascending=True).reset_index(drop=True)
+df.to_excel('cleaned_dataset_global.xlsx', index=False)
 
 ### Market Basket Analysis - ##Done by Imal and Dulmi
 import pandas as pd
