@@ -63,18 +63,22 @@ df.to_excel('cleaned_dataset_global.xlsx', index=False)
 
 ### Market Basket Analysis - ##Done by Imal and Dulmi
 
+#Reading the cleaned dataset
+df1 = pd.read_excel("cleaned_dataset_global (1).xlsx")
+df1.head()
+
 # Creating a new column as single_transaction using Customer ID and Order Date
-df["single_transaction"] = df["Customer ID"].astype(str)+'_'+df['Order Date'].astype(str)
-df.head()
+df1["single_transaction"] = df1["Customer ID"].astype(str)+'_'+df1['Order Date'].astype(str)
+df1.head()
 
 # Creating a table with the new column and Sub-Category
-df2 = pd.crosstab(df['single_transaction'],df['Sub-Category'])
+df2 = pd.crosstab(df1['single_transaction'],df1['Sub-Category'])
 df2
 
-## TRAINING DATASET
+## TRAINING DATASET - ## Done by Navoda
 
 ###### MBA using Segments to train the dataset
-## For Consumer Segment
+## For Segment 1
 
 s1 = (df[df["Segment"] == "Consumer"]
      .groupby(["Order ID", "Sub-Category"])["Quantity"]
@@ -109,6 +113,28 @@ plt.xlabel('Consequents')
 plt.ylabel('Antecedents')
 plt.show()
 
+## For Segment 2
+s2 = (df[df["Segment"] == "Home Office"]
+     .groupby(["Order ID", "Sub-Category"])["Quantity"]
+     .sum().unstack().reset_index().fillna(0)
+     .set_index("Order ID"))
+s2
+
+def encode_units(x):
+    if x <=0:
+        return 0
+    if x >=1:
+        return 1
+
+s2_sets = s2.applymap(encode_units)
+
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+
+frequent_itemsets_s2 = apriori(s2_sets, min_support=0.001, use_colnames = True)
+rules_s2 = association_rules(frequent_itemsets_s2, metric = "lift", min_threshold=1)
+rules_s2
+
 # vis2(heatmap)
 
 heatmap_data = rules_s2.pivot(index='antecedents', columns='consequents', values='lift')
@@ -118,6 +144,30 @@ plt.title('lift Heatmap of Association Rules')
 plt.xlabel('Consequents')
 plt.ylabel('Antecedents')
 plt.show()
+
+
+## For Segment 3
+
+s3 = (df[df["Segment"] == "Corporate"]
+     .groupby(["Order ID", "Sub-Category"])["Quantity"]
+     .sum().unstack().reset_index().fillna(0)
+     .set_index("Order ID"))
+s3
+
+def encode_units(x):
+    if x <=0:
+        return 0
+    if x >=1:
+        return 1
+
+s3_sets = s3.applymap(encode_units)
+
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+
+frequent_itemsets_s3 = apriori(s3_sets, min_support=0.001, use_colnames = True)
+rules_s3 = association_rules(frequent_itemsets_s3, metric = "lift", min_threshold=1)
+rules_s3
 
 # vis3(heatmap)
 import seaborn as sns
@@ -135,7 +185,7 @@ plt.show()
 f=rules_s3[(rules_s3["lift"]>=1)&(rules_s3["confidence"]>=0.1)]
 f
 
-# vis4(sscatter)
+# vis4(scatter)
 plt.figure(figsize=(5, 4))
 plt.scatter(range(len(f)), f['lift'], c=f['lift'], cmap='coolwarm')
 plt.colorbar(label='Lift')
@@ -191,4 +241,17 @@ sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".2f")
 plt.title('lift Heatmap of Association Rules')
 plt.xlabel('Consequents')
 plt.ylabel('Antecedents')
+plt.show()
+
+#unique results
+f1=rules2[(rules2["lift"]>=1)&(rules2["confidence"]>=0.1)]
+f1
+
+# unique vizualization
+plt.figure(figsize=(5, 4))
+plt.scatter(range(len(f1)), f1['lift'], c=f1['lift'], cmap='coolwarm')
+plt.colorbar(label='Lift')
+plt.title('Scatter Plot of Lift Values')
+plt.xlabel('Association Rule Index')
+plt.ylabel('Lift')
 plt.show()
