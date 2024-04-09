@@ -2,11 +2,10 @@
 
 import pandas as pd
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-Global_superstore_data = pd.read_excel("Data science project/Global Superstore Lite.xlsx")
+Global_superstore_data = pd.read_excel("Global Superstore Lite.xlsx")
 
 #understanding the data set
 Global_superstore_data.head()
@@ -34,9 +33,8 @@ sns.pairplot(Global_superstore_data)
 sns.displot(Global_superstore_data['Quantity'])
 
 ### Data Pre-processing - ## Done by Sihas
-import pandas as pd 
-import numpy as np
 
+# Reading the dataset
 df = pd.read_excel('Global Superstore Lite.xlsx')
 print(df.head())
 
@@ -53,22 +51,17 @@ columns_info = df.dtypes
 print("Columns and their data types:")
 print(columns_info)
 
-duplicate_rows = df[df.duplicated()]
+duplicate_rows = df[df.duplicated()] #Removing duplicate rows
 print("Duplicate Rows except first occurrence:")
 print(duplicate_rows)
 
-df = df.round(2)
+df = df.round(2) #Rounding off to 2 decimal places
 print(df.head())
 
-df = df.sort_values(by='Order Priority', ascending=True).reset_index(drop=True)
+df = df.sort_values(by='Order Priority', ascending=True).reset_index(drop=True) 
 df.to_excel('cleaned_dataset_global.xlsx', index=False)
 
 ### Market Basket Analysis - ##Done by Imal and Dulmi
-import pandas as pd
-
-# Reading the dataset
-df = pd.read_excel("cleaned_dataset_global (1).xlsx")
-df.head()
 
 # Creating a new column as single_transaction using Customer ID and Order Date
 df["single_transaction"] = df["Customer ID"].astype(str)+'_'+df['Order Date'].astype(str)
