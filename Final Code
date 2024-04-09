@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
 
 Global_superstore_data = pd.read_excel("Global Superstore Lite.xlsx")
 
@@ -69,13 +71,13 @@ df1.head()
 
 # Creating a new column as single_transaction using Customer ID and Order Date
 df1["single_transaction"] = df1["Customer ID"].astype(str)+'_'+df1['Order Date'].astype(str)
-df1.head()
+print(df1.head())
 
 # Creating a table with the new column and Sub-Category
 df2 = pd.crosstab(df1['single_transaction'],df1['Sub-Category'])
-df2
+print(df2)
 
-## TRAINING DATASET - ## Done by Navoda
+## TRAINING DATASET - ## Done by Hewa Prabashini
 
 ###### MBA using Segments to train the dataset
 ## For Segment 1
@@ -94,12 +96,9 @@ def encode_units(x):
 
 s1_sets = s1.applymap(encode_units)
 
-from mlxtend.frequent_patterns import apriori
-from mlxtend.frequent_patterns import association_rules
-
 frequent_itemsets_s1 = apriori(s1_sets, min_support=0.001, use_colnames = True)
 rules_s1 = association_rules(frequent_itemsets_s1, metric = "lift", min_threshold=1)
-rules_s1
+print(rules_s1)
 
 #vis1(heatmap)
 heatmap_data = rules_s1.pivot(index='antecedents', columns='consequents', values='lift')
@@ -125,12 +124,9 @@ def encode_units(x):
 
 s2_sets = s2.applymap(encode_units)
 
-from mlxtend.frequent_patterns import apriori
-from mlxtend.frequent_patterns import association_rules
-
 frequent_itemsets_s2 = apriori(s2_sets, min_support=0.001, use_colnames = True)
 rules_s2 = association_rules(frequent_itemsets_s2, metric = "lift", min_threshold=1)
-rules_s2
+print(rules_s2)
 
 # vis2(heatmap)
 
@@ -159,12 +155,9 @@ def encode_units(x):
 
 s3_sets = s3.applymap(encode_units)
 
-from mlxtend.frequent_patterns import apriori
-from mlxtend.frequent_patterns import association_rules
-
 frequent_itemsets_s3 = apriori(s3_sets, min_support=0.001, use_colnames = True)
 rules_s3 = association_rules(frequent_itemsets_s3, metric = "lift", min_threshold=1)
-rules_s3
+print(rules_s3)
 
 # vis3(heatmap)
 heatmap_data = rules_s3.pivot(index='antecedents', columns='consequents', values='lift')
@@ -177,7 +170,7 @@ plt.show()
 
 #unique results
 f=rules_s3[(rules_s3["lift"]>=1)&(rules_s3["confidence"]>=0.1)]
-f
+print(f)
 
 # vis4(scatter)
 plt.figure(figsize=(5, 4))
@@ -202,18 +195,16 @@ basket_input = df2.applymap(encode)
 ## SUPPORT
 
 # Apply apriori algorithm for frequent itemsets
-from mlxtend.frequent_patterns import apriori
-from mlxtend.frequent_patterns import association_rules
 
 frequent_itemsets = apriori(basket_input, min_support = 0.001, use_colnames=True)
 
-frequent_itemsets
+print(frequent_itemsets)
 
 ## CONFIDENCE
 
 # Generate association rules with the measure confidence
 rules1 = association_rules(frequent_itemsets, metric = "confidence", min_threshold=0.01)
-rules1
+print(rules1)
 
 ## LIFT
 
@@ -237,7 +228,7 @@ plt.show()
 
 #unique results
 f1=rules2[(rules2["lift"]>=1)&(rules2["confidence"]>=0.1)]
-f1
+print(f1)
 
 # unique vizualization
 plt.figure(figsize=(5, 4))
